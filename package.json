@@ -34,7 +34,13 @@
 		"root": true,
 		"extends": [
 			"eslint-config-kiprasmel"
-		]
+		],
+		"rules": {
+			"no-restricted-syntax": 0,
+			"guard-for-in": 0,
+			"no-lonely-if": 0,
+			"prefer-destructuring": 0
+		}
 	},
 	"browserslist": {
 		"production": [
