@@ -1,15 +1,19 @@
+import { useContext } from "react";
 import { css } from "emotion";
 
 import { StackEnriched } from "../model/stack";
-import { StackComponentIcons } from "./StackComponentIcons";
+import { StackDetailsContext } from "../context/StackDetailsContext";
+import { StackComponentIconList } from "./StackComponentIcons";
 
 type Props = {
 	stack: StackEnriched;
 };
 
 export function StackItem({ stack }: Props) {
+	const { openStackDetails } = useContext(StackDetailsContext);
+
 	return (
-		<article className={styles.stackCard}>
+		<article className={styles.stackCard} onClick={() => openStackDetails(stack)}>
 			<div className={styles.stackHeader}>
 				<h2 title={stack.name}>{stack.name}</h2>
 			</div>
@@ -17,7 +21,7 @@ export function StackItem({ stack }: Props) {
 			{stack.description && <p className={styles.description}>{stack.description}</p>}
 
 			<div className={styles.meta}>
-				<StackComponentIcons components={stack.components} />
+				<StackComponentIconList components={stack.components} />
 				{stack.is_shared && <span className={styles.shared}>Shared</span>}
 			</div>
 		</article>
@@ -34,6 +38,7 @@ const styles = {
 			transform 0.2s,
 			box-shadow 0.2s;
 		cursor: pointer;
+		user-select: none;
 
 		&:hover {
 			transform: translateY(-2px);
@@ -44,6 +49,7 @@ const styles = {
 		margin-bottom: 0.75rem;
 
 		h2 {
+			margin-top: 0;
 			font-size: 1.25rem;
 			font-weight: 500;
 			color: #1a1a1a;

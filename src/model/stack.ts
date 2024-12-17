@@ -1,4 +1,5 @@
 import type { StackComponent } from "../data/stack-components";
+import { COMPONENT_TYPE_ORDER } from "../component/StackComponentIcons";
 
 export { StackComponent };
 
@@ -25,3 +26,21 @@ export type Stack = {
 export type StackEnriched = Omit<Stack, "components"> & {
 	components: StackComponent[];
 };
+
+export function sortStackComponents(stack: StackEnriched) {
+	return [...stack.components].sort((a, b) => {
+		const aIndex = COMPONENT_TYPE_ORDER.indexOf(a.type);
+		const bIndex = COMPONENT_TYPE_ORDER.indexOf(b.type);
+		return aIndex - bIndex;
+	});
+}
+
+export function countComponentsByType(components: StackComponent[]) {
+	return components.reduce(
+		(acc, component) => {
+			acc[component.type] = (acc[component.type] || 0) + 1;
+			return acc;
+		},
+		{} as Record<StackComponent["type"], number>
+	);
+}

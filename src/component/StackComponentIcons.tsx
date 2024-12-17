@@ -1,7 +1,7 @@
 import { css } from "emotion";
 import { Database, Shuffle, Package, Search, Wand2, Rocket, KeyRound, LucideIcon } from "lucide-react";
 
-import { StackComponent } from "../model/stack";
+import { StackComponent, countComponentsByType } from "../model/stack";
 
 const COMPONENT_ICONS = {
 	artifact_store: { Icon: Database, color: "hsl(207, 90%, 54%)", title: "Artifact Store" },
@@ -13,32 +13,52 @@ const COMPONENT_ICONS = {
 	secrets_manager: { Icon: KeyRound, color: "hsl(16, 70%, 38%)", title: "Secrets Manager" },
 } as const satisfies Record<StackComponent["type"], { Icon: LucideIcon; color: string; title: string }>;
 
-type Props = {
+export const COMPONENT_TYPE_ORDER = Object.keys(COMPONENT_ICONS) as StackComponent["type"][];
+
+export type StackComponentIconListProps = {
 	components: StackComponent[];
 };
 
-export function StackComponentIcons({ components }: Props) {
+export function StackComponentIconList({ components }: StackComponentIconListProps) {
 	const componentCounts = countComponentsByType(components);
 
 	return (
 		<div className={styles.icons}>
-			{Object.entries(COMPONENT_ICONS).map(([type, { Icon, color, title }]) => {
+			{Object.keys(COMPONENT_ICONS).map((type) => {
 				const count = componentCounts[type as StackComponent["type"]] || 0;
 				const isActive = count > 0;
 
-				const colorResolved = isActive ? color : "hsl(0, 0%, 62%)";
-
 				return (
-					<div key={type} className={styles.iconWrapper} title={title}>
-						<Icon size={16} className={styles.icon} color={colorResolved} />
-						{count > 1 && (
-							<span className={styles.count} style={{ color: colorResolved }}>
-								{count}
-							</span>
-						)}
-					</div>
+					<StackComponentIcon
+						key={type}
+						type={type as StackComponent["type"]}
+						count={count}
+						isActive={isActive}
+					/>
 				);
 			})}
+		</div>
+	);
+}
+
+export type StackComponentIconProps = {
+	type: StackComponent["type"];
+	count: number;
+	isActive: boolean;
+};
+
+export function StackComponentIcon({ type, count, isActive }: StackComponentIconProps) {
+	const { Icon, color: _color, title } = COMPONENT_ICONS[type];
+	const color = isActive ? _color : "hsl(0, 0%, 62%)";
+
+	return (
+		<div key={type} className={styles.iconWrapper} title={title}>
+			<Icon size={16} className={styles.icon} color={color} />
+			{count > 1 && (
+				<span className={styles.count} style={{ color }}>
+					{count}
+				</span>
+			)}
 		</div>
 	);
 }
@@ -66,13 +86,3 @@ const styles = {
 		font-weight: 500;
 	`,
 };
-
-function countComponentsByType(components: StackComponent[]) {
-	return components.reduce(
-		(acc, component) => {
-			acc[component.type] = (acc[component.type] || 0) + 1;
-			return acc;
-		},
-		{} as Record<StackComponent["type"], number>
-	);
-}
