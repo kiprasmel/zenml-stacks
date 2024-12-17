@@ -5,13 +5,26 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { StackItem } from "./StackItem";
 
 export function StacksList() {
-	const { enrichedStacks, isLoading } = useEnrichedStacks();
+	const {
+		enrichedStacks, //
+		isLoading,
+		totalComponentsInStacksCount,
+		totalComponentsInStacksCountUnique,
+	} = useEnrichedStacks();
 
 	return (
 		<>
 			<header className={styles.header}>
 				<h1>Stacks</h1>
-				{isLoading ? <p>&nbsp;</p> : <p>{enrichedStacks.length} stacks found</p>}
+				{isLoading ? (
+					<p>&nbsp;</p>
+				) : (
+					<p>
+						<span>{enrichedStacks.length} stacks with </span>
+						<span>{totalComponentsInStacksCount} components </span>
+						<span>({totalComponentsInStacksCountUnique} unique)</span>
+					</p>
+				)}
 			</header>
 
 			{isLoading ? (

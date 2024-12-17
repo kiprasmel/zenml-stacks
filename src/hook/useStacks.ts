@@ -46,5 +46,17 @@ export function useEnrichedStacks() {
 	const enrichedStacks = enrichStacksWithComponents(stacks, components);
 	const isLoading = isLoadingStacks || isLoadingComponents;
 
-	return { stacks, components, enrichedStacks, isLoading };
+	const totalComponentsInStacksCount = enrichedStacks.reduce((acc, stack) => acc + stack.components.length, 0);
+	const totalComponentsInStacksCountUnique = new Set(
+		enrichedStacks.flatMap((stack) => stack.components.map((x) => x.id))
+	).size;
+
+	return {
+		stacks, //
+		components,
+		enrichedStacks,
+		isLoading,
+		totalComponentsInStacksCount,
+		totalComponentsInStacksCountUnique,
+	};
 }

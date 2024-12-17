@@ -2,7 +2,7 @@ import { css } from "emotion";
 import { X } from "lucide-react";
 
 import { StackEnriched, sortStackComponents } from "../model/stack";
-import { StackComponentIcon } from "./StackComponentIcons";
+import { COMPONENT_TYPE_ORDER, StackComponentIcon } from "./StackComponentIcons";
 
 type Props = {
 	stack: StackEnriched;
@@ -57,7 +57,9 @@ export function StackDetailsPanel({ stack, onClose }: Props) {
 
 					{/* Components */}
 					<section className={styles.section}>
-						<h3>Components</h3>
+						<h3>
+							Components ({sortedComponents.length}/{COMPONENT_TYPE_ORDER.length})
+						</h3>
 						<div className={styles.componentsList}>
 							{sortedComponents.map((component) => (
 								<div key={component.id} className={styles.component}>
