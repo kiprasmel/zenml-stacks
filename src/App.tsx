@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { css } from "emotion";
+import { useQuery } from "@tanstack/react-query";
 
 import "./reset.css";
 
@@ -58,51 +58,30 @@ export type StackEnriched = Omit<Stack, "components"> & {
 
 const API = "https://zenml-frontend-challenge-backend.fly.dev";
 
-/**
- * TODO retry logic
- */
 function useFetchStacks() {
-	const [stacks, setStacks] = useState<Stack[]>([]);
-
-	useEffect(() => {
-		fetch(`${API}/stacks`)
-			.then((res) => {
-				if (!res.ok) {
-					console.error("failed fetching stacks, !res.ok", res);
-					return [];
-				}
-				return res.json();
-			})
-			.then(setStacks)
-			.catch((err) => {
-				console.error("failed fetching stacks", err);
-				setStacks([]);
-			});
-	}, []);
-
-	return [stacks];
+	return useQuery({
+		queryKey: ["stacks"],
+		queryFn: async () => {
+			const res = await fetch(`${API}/stacks`);
+			if (!res.ok) throw new Error("Failed to fetch stacks");
+			return res.json();
+		},
+		retry: 5,
+		retryDelay: (attemptIndex) => 1000 * 2 ** attemptIndex,
+	});
 }
 
 function useFetchStackComponents() {
-	const [components, setComponents] = useState<StackComponent[]>([]);
-
-	useEffect(() => {
-		fetch(`${API}/components`)
-			.then((res) => {
-				if (!res.ok) {
-					console.error("failed fetching components, !res.ok", res);
-					return [];
-				}
-				return res.json();
-			})
-			.then(setComponents)
-			.catch((err) => {
-				console.error("failed fetching components", err);
-				setComponents([]);
-			});
-	}, []);
-
-	return [components];
+	return useQuery({
+		queryKey: ["components"],
+		queryFn: async () => {
+			const res = await fetch(`${API}/components`);
+			if (!res.ok) throw new Error("Failed to fetch components");
+			return res.json();
+		},
+		retry: 3,
+		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+	});
 }
 
 function enrichStacksWithComponents(stacks: Stack[], components: StackComponent[]): StackEnriched[] {
@@ -125,8 +104,8 @@ function enrichStacksWithComponents(stacks: Stack[], components: StackComponent[
 }
 
 function useEnrichedStacks() {
-	const [stacks] = useFetchStacks();
-	const [components] = useFetchStackComponents();
+	const { data: stacks = [] } = useFetchStacks();
+	const { data: components = [] } = useFetchStackComponents();
 
 	const enrichedStacks: StackEnriched[] = enrichStacksWithComponents(stacks, components);
 
