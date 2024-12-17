@@ -10,23 +10,26 @@ function App() {
 
 	return (
 		<div className={styles.app}>
-			<h1>Stacks</h1>
+			<header className={styles.header}>
+				<h1>Stacks</h1>
+				<p>{enrichedStacks.length} stacks found</p>
+			</header>
 
-			<div>
-				<ul className={styles.stackList}>
-					{enrichedStacks.map((stack) => (
-						<li key={stack.id}>
+			<div className={styles.stackGrid}>
+				{enrichedStacks.map((stack) => (
+					<article key={stack.id} className={styles.stackCard}>
+						<div className={styles.stackHeader}>
 							<h2>{stack.name}</h2>
-							<div>
-								<ul>
-									{stack.components.map((c) => (
-										<li key={stack.id + ":" + c.id}>{c.type}</li>
-									))}
-								</ul>
-							</div>
-						</li>
-					))}
-				</ul>
+						</div>
+
+						{stack.description && <p className={styles.description}>{stack.description}</p>}
+
+						<div className={styles.meta}>
+							<span>{stack.components.length} components</span>
+							{stack.is_shared && <span className={styles.shared}>Shared</span>}
+						</div>
+					</article>
+				))}
 			</div>
 		</div>
 	);
@@ -113,11 +116,79 @@ function useEnrichedStacks() {
 }
 
 const styles = {
-	app: css``,
-	stackList: css`
-		& > * + * {
-			margin-top: 1rem;
+	app: css`
+		max-width: 80vw;
+		margin: 0 auto;
+		padding: 2rem;
+	`,
+	header: css`
+		margin-bottom: 2rem;
+
+		h1 {
+			font-size: 2rem;
+			font-weight: 600;
+			color: #1a1a1a;
 		}
+
+		p {
+			color: #666;
+			margin-top: 0.5rem;
+		}
+	`,
+	stackGrid: css`
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+		gap: 1.5rem;
+	`,
+	stackCard: css`
+		background: white;
+		border-radius: 8px;
+		padding: 1.5rem;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+		cursor: pointer;
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+	`,
+	stackHeader: css`
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 0.75rem;
+
+		h2 {
+			font-size: 1.25rem;
+			font-weight: 500;
+			color: #1a1a1a;
+		}
+	`,
+	description: css`
+		color: #4a4a4a;
+		font-size: 0.875rem;
+		margin-bottom: 1rem;
+		display: block;
+		line-clamp: 2;
+		box-orient: vertical;
+		overflow: hidden;
+	`,
+	meta: css`
+		display: flex;
+		gap: 1rem;
+		font-size: 0.875rem;
+		color: #666;
+	`,
+	shared: css`
+		background: #e5f6fd;
+		color: #0288d1;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.75rem;
+		font-weight: 500;
 	`,
 };
 
