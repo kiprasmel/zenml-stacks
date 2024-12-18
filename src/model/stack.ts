@@ -44,3 +44,21 @@ export function countComponentsByType(components: StackComponent[]) {
 		{} as Record<StackComponent["type"], number>
 	);
 }
+
+export function searchStacks(enrichedStacks: StackEnriched[], searchQuery: string) {
+	return enrichedStacks.filter((stack) => {
+		if (!searchQuery.trim()) return true;
+
+		const query = searchQuery.toLowerCase();
+		return (
+			stack.name.toLowerCase().includes(query) ||
+			stack.description?.toLowerCase().includes(query) ||
+			stack.components.some(
+				(component) =>
+					component.name.toLowerCase().includes(query) ||
+					component.type.toLowerCase().includes(query) ||
+					component.flavor.toLowerCase().includes(query)
+			)
+		);
+	});
+}

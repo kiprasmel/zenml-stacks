@@ -1,16 +1,20 @@
+import { useState } from "react";
 import { css } from "emotion";
 
 import { useEnrichedStacks } from "../hook/useStacks";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { StackItem } from "./StackItem";
+import { SearchInput } from "./SearchInput";
 
 export function StacksList() {
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const {
-		enrichedStacks, //
+		filteredEnrichedStacks, //
 		isLoading,
 		totalComponentsInStacksCount,
 		totalComponentsInStacksCountUnique,
-	} = useEnrichedStacks();
+	} = useEnrichedStacks(searchQuery);
 
 	return (
 		<>
@@ -19,11 +23,21 @@ export function StacksList() {
 				{isLoading ? (
 					<p>&nbsp;</p>
 				) : (
-					<p>
-						<span>{enrichedStacks.length} stacks with </span>
-						<span>{totalComponentsInStacksCount} components </span>
-						<span>({totalComponentsInStacksCountUnique} unique)</span>
-					</p>
+					<div>
+						<p>
+							<span>{filteredEnrichedStacks.length} stacks with </span>
+							<span>{totalComponentsInStacksCount} components </span>
+							<span>({totalComponentsInStacksCountUnique} unique)</span>
+						</p>
+
+						<div className={styles.search}>
+							<SearchInput
+								value={searchQuery}
+								onChange={setSearchQuery}
+								placeholder="Search stacks by name, description, or components..."
+							/>
+						</div>
+					</div>
 				)}
 			</header>
 
@@ -34,7 +48,7 @@ export function StacksList() {
 				</div>
 			) : (
 				<div className={styles.stackGrid}>
-					{enrichedStacks.map((stack) => (
+					{filteredEnrichedStacks.map((stack) => (
 						<StackItem key={stack.id} stack={stack} />
 					))}
 				</div>
@@ -74,5 +88,8 @@ const styles = {
 			color: hsl(0, 0%, 45%);
 			font-size: 0.875rem;
 		}
+	`,
+	search: css`
+		margin-top: 1.5rem;
 	`,
 };

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchStackComponents, fetchStacks } from "../api/api";
-import { Stack, StackComponent, StackEnriched } from "../model/stack";
+import { Stack, StackComponent, StackEnriched, searchStacks } from "../model/stack";
 
 function useFetchStacks() {
 	return useQuery({
@@ -38,23 +38,27 @@ function enrichStacksWithComponents(stacks: Stack[], components: StackComponent[
 	return enriched;
 }
 
-export function useEnrichedStacks() {
+export function useEnrichedStacks(searchQuery: string) {
 	const { data: stacks = [], isLoading: isLoadingStacks } = useFetchStacks();
-
 	const { data: components = [], isLoading: isLoadingComponents } = useFetchStackComponents();
-
-	const enrichedStacks = enrichStacksWithComponents(stacks, components);
 	const isLoading = isLoadingStacks || isLoadingComponents;
 
-	const totalComponentsInStacksCount = enrichedStacks.reduce((acc, stack) => acc + stack.components.length, 0);
+	const enrichedStacks = enrichStacksWithComponents(stacks, components);
+	const filteredEnrichedStacks = searchStacks(enrichedStacks, searchQuery);
+
+	const totalComponentsInStacksCount = filteredEnrichedStacks.reduce(
+		(acc, stack) => acc + stack.components.length,
+		0
+	);
 	const totalComponentsInStacksCountUnique = new Set(
-		enrichedStacks.flatMap((stack) => stack.components.map((x) => x.id))
+		filteredEnrichedStacks.flatMap((stack) => stack.components.map((x) => x.id))
 	).size;
 
 	return {
 		stacks, //
 		components,
 		enrichedStacks,
+		filteredEnrichedStacks,
 		isLoading,
 		totalComponentsInStacksCount,
 		totalComponentsInStacksCountUnique,
