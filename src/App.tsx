@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { css } from "emotion";
 
 import "./reset.css";
-import { useState, useEffect } from "react";
+
+import type { StackComponent } from "./data/stack-components";
 
 function App() {
 	const { enrichedStacks } = useEnrichedStacks();
@@ -80,12 +82,6 @@ function useFetchStacks() {
 
 	return [stacks];
 }
-
-export type StackComponent = {
-	// TODO
-	id: string;
-	type: string; // stack's flavor
-};
 
 function useFetchStackComponents() {
 	const [components, setComponents] = useState<StackComponent[]>([]);
