@@ -1,8 +1,8 @@
 import { css } from "emotion";
 import { X } from "lucide-react";
 
-import { StackEnriched, sortStackComponents } from "../model/stack";
-import { COMPONENT_TYPE_ORDER, StackComponentIcon } from "./StackComponentIcons";
+import { COMPONENT_TYPE_ORDER, StackEnriched, sortStackComponents } from "../model/stack";
+import { StackComponentIcon } from "./StackComponentIcons";
 
 type Props = {
 	stack: StackEnriched;
